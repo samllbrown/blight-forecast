@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+# re-downloadable raw pulls (scripts/pull_weather.py, scripts/pull_meteostat.py)
+data/raw/weather/*.json.gz
+data/raw/weather/*.part
+data/raw/meteostat/*.csv.gz
+data/raw/meteostat/*.json.gz
+# rebuilt by blightcast.weather / stations / dataset; the two station files exceed GitHub's 100 MB limit
+data/processed/daily/
+data/processed/daily.stations.csv.gz
+data/processed/panel.*.csv.gz
+# per-row predictions (large) and run logs
+results/tables/preds.*.csv.gz
+results/*.log
+results/progress.jsonl
+results/figures/*.svg

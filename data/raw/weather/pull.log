@@ -1,0 +1,17 @@
+538 districts, 537 to pull, end 2026-09-01
+1/537 DD8 181176 hours, 4s
+  HTTP 429 {"reason":"Minutely API request limit exceeded. Please try again in one minute.","error":true}, sleeping 65s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+11/537 DD9 181176 hours, 200s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+  HTTP 429 {"error":true,"reason":"Hourly API request limit exceeded. Please try again in the next hour."}, sleeping 600s
+21/537 LL53 181176 hours, 2860s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+31/537 KY10 181176 hours, 3036s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+41/537 TF9 181176 hours, 3143s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+  HTTP 429 {"error":true,"reason":"Minutely API request limit exceeded. Please try again in one minute."}, sleeping 65s
+  HTTP 429 {"error":true,"reason":"Daily API request limit exceeded. Please try again tomorrow."}, sleeping 3600s
