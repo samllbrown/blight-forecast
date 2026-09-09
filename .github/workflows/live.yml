@@ -15,6 +15,10 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install -r requirements-live.txt
+      - name: Check Open-Meteo is reachable from the runner
+        run: |
+          curl -sS -o /dev/null -m 60 -w 'one point: %{http_code} in %{time_total}s\n' 'https://api.open-meteo.com/v1/forecast?latitude=56.6&longitude=-2.9&hourly=temperature_2m,relative_humidity_2m&past_days=14&forecast_days=8' || true
+          curl -sS -o /dev/null -m 120 -w 'fifteen points: %{http_code} in %{time_total}s, %{size_download} bytes\n' 'https://api.open-meteo.com/v1/forecast?latitude=56.6,56.5,56.4,56.3,56.2,56.1,56.0,55.9,55.8,55.7,55.6,55.5,55.4,55.3,55.2&longitude=-2.9,-2.8,-2.7,-2.6,-2.5,-2.4,-2.3,-2.2,-2.1,-2.0,-1.9,-1.8,-1.7,-1.6,-1.5&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&past_days=14&forecast_days=8' || true
       - run: PYTHONPATH=src python -m blightcast.live run
       - name: Commit the outlook
         run: |
