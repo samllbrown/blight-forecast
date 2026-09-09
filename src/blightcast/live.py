@@ -76,12 +76,16 @@ def fit(model='stations'):
     log('DONE fit')
 
 # ---- run: data pulls ------------------------------------------------------------------
-def get_json(url, tries=6):
+def get_json(url, tries=8):
     for i in range(tries):
-        r = requests.get(url, headers=UA, timeout=120)
-        if r.status_code == 200: return r.json()
+        try:
+            r = requests.get(url, headers=UA, timeout=180)
+            if r.status_code == 200: return r.json()
+            why = f'{r.status_code}'
+        except requests.RequestException as e:       # dropped connections and handshake timeouts from the runners
+            why = type(e).__name__
         wait = 20 * (i + 1)
-        log(f'  {r.status_code} from {url[:80]}..., waiting {wait}s'); time.sleep(wait)
+        log(f'  {why} from {url[:80]}..., waiting {wait}s'); time.sleep(wait)
     raise RuntimeError(f'gave up on {url[:120]}')
 
 def fetch_reports(year):
@@ -147,7 +151,7 @@ def season_weather(dist, today):
                             f'start_date={need_from}&end_date={gap_end - timedelta(days=1)}', batch=10, pause=2.0)
         cache = pd.concat([cache, hist], ignore_index=True)
     log('pulling the last 14 days and the 8-day forecast')
-    fc = pull_weather(dist, 'https://api.open-meteo.com/v1/forecast', f'past_days={PAST_DAYS}&forecast_days={FORECAST_DAYS}')
+    fc = pull_weather(dist, 'https://api.open-meteo.com/v1/forecast', f'past_days={PAST_DAYS}&forecast_days={FORECAST_DAYS}', batch=15)
     fc['date'] = pd.to_datetime(fc.date)
     observed = fc[fc.date.dt.date < today]; forecast = fc[fc.date.dt.date >= today]
     cache = pd.concat([cache[~cache.date.isin(observed.date.unique())] if len(cache) else cache, observed], ignore_index=True)
