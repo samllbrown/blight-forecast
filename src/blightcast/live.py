@@ -43,6 +43,11 @@ CROP = {'Conventional crop', 'Organic crop', 'Trial'}
 
 def log(*a): print(*a, flush=True)
 
+# GitHub-hosted runners resolve api.open-meteo.com over IPv6 first and the connection stalls until the
+# timeout, while curl falls back to IPv4 at once. Force IPv4 for everything requests does.
+import urllib3.util.connection as _uc, socket as _socket
+_uc.allowed_gai_family = lambda: _socket.AF_INET
+
 # ---- fit -----------------------------------------------------------------------------
 def fit(model='stations'):
     cols = SETS['all']
