@@ -63,6 +63,8 @@ for y in ['y7', 'y7_lag', 'yn25_7', 'yn25_lag']:
     t = pd.read_csv(os.path.join(RES, 'tables', f'part_b.stations.{y}.csv'))
     out['part_b'][y] = t.drop(columns=['per_season'], errors='ignore').round(3).to_dict('records')
 out['part_a'] = json.load(open(os.path.join(RES, 'tables', 'part_a.stations.json')))
+hw = pd.read_csv(os.path.join(RES, 'tables', 'hold_window.stations.y7.csv'))
+out['hold_window'] = hw.round(4).to_dict('records')
 # map: every district dot with scores; animation flags for three seasons
 ds = pd.read_csv(os.path.join(RES, 'tables', 'district_scores.stations.y7.csv')).set_index('outcode')
 counts = ob.groupby('outcode').size()

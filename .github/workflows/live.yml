@@ -1,0 +1,25 @@
+name: Daily blight outlook
+on:
+  schedule:
+    - cron: '20 6 * * *'   # 06:20 UTC each morning, after the overnight forecast run
+  workflow_dispatch:
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements-live.txt
+      - run: PYTHONPATH=src python -m blightcast.live run
+      - name: Commit the outlook
+        run: |
+          git config user.name 'blight-forecast bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add live/latest.json data/live/
+          git diff --cached --quiet || git commit -m "Daily outlook $(date -u +%F)"
+          git push

@@ -83,6 +83,20 @@ By week of year (`by_week.stations.y7.csv`): in May and early June the alert is 
 
 By region: alert share Wales 75 %, England 61 %, Scotland 54 %; Hutton AUC Scotland 0.66, England 0.60, Wales 0.59. By season: Hutton catch rate ranged from 0.58 (2022) and 0.69 (2024) to 0.96 (2012) and 0.98 (2021).
 
+### How long the alert is held
+
+"Under alert" above means a Hutton period ended in the previous 14 days. The published figures count only the day a period is declared, which is why Skelsey 2021 reports 31 % alert days for the same rule. `blightcast/holdwindow.py` scores the rule at every hold on the test seasons (`results/tables/hold_window.stations.y7.csv`):
+
+| alert held for | district-days under alert | outbreak-weeks caught | AUC of the flag |
+|---|---|---|---|
+| 1 day (declared day only) | 16 % | 27 % | 0.55 |
+| 3 days | 29 % | 46 % | 0.59 |
+| 7 days | 45 % | 68 % | 0.61 |
+| 14 days (used here) | 61 % | 84 % | 0.62 |
+| 28 days | 73 % | 93 % | 0.60 |
+
+The published metric (a period in the 28 days before a report) is 94.5 % at every hold, because it does not look at the hold. The hold is a choice of where to sit on the rule's own curve, not a way off it.
+
 ### Lag
 
 Detrended within season, the correlation between the national share of districts under a Hutton period and the national daily report count peaks at a lag of 8 days, but weakly (r 0.07; raw r 0.20). Reports sit a median 3 days after the last Hutton period, against 5 days for random summer days in the same districts (75th percentile 9 versus 15 days).
@@ -90,6 +104,16 @@ Detrended within season, the correlation between the national share of districts
 ### Weather source check
 
 For the nine districts with both sources (May to September): ERA5-Land minimum temperature runs 0.6 °C warmer than the station interpolation and gives 5.3 hours at RH >= 90 % per day against 6.9 from stations; Hutton-day flags agree on 83 % of days and the period share is 17.5 % against 19.7 %. The coastal Kent and Suffolk districts differ most. Stations are used throughout.
+
+## The daily outlook (live service)
+
+`blightcast/live.py` runs the fitted model every morning in GitHub Actions (`.github/workflows/live.yml`, 06:20 UTC) and writes `live/latest.json`, which the blog post reads from this repository's raw URL.
+
+- `python -m blightcast.live fit` fits the gradient-boosting model with the full feature set on every season in the station panel (2006 to 2025) and saves it with its context (`results/models/`): week-of-year climatology over all seasons, each district's reports per season, and the probability thresholds at which the held-out model was on for 30 % and 61 % of days.
+- `python -m blightcast.live run` pulls this season's and last season's reports from the Fight Against Blight API, keeps a season cache of daily weather for all 525 districts from 1 April (`data/live/weather_<year>.csv.gz`, bootstrapped once from Open-Meteo's historical-forecast archive and topped up each run from the forecast API with 14 days back and 8 ahead), builds the panel's features through `dataset.district_features` (the same function the research used), scores every district for today and the next seven days, and scores the season so far where the outcome is already known.
+- Requirements for the action are pinned in `requirements-live.txt` (the model is a pickled scikit-learn 1.9.0 estimator).
+
+The weather here is a forecast model's analysis and forecast, not station observations, so the Hutton flag it computes disagrees with BlightSpy's on some days; the research found weather adds about one AUC point on top of calendar, reports and place, so the probabilities move little. First run, 9 September 2026: for the 2026 season to 2 September the Hutton alert was on for 46 % of district-days and caught 89 % of outbreak-weeks (AUC 0.71); the model scored 0.90 and matched the catch on 29 % of days.
 
 ## Limitations
 
